@@ -19,10 +19,21 @@ double averageEncoderValue() {
 }
 
 //AUTON FUNCTIONS
+int slewControl(int requestedSpeed){
+  int currentSpeed = 0;
+  int rate = 1;
+  if(requestedSpeed > currentSpeed){
+    currentSpeed += rate;
+  }
+  if(requestedSpeed < currentSpeed){
+    currentSpeed -= rate;
+  }
+  return currentSpeed;
+  delay(20);
+}
+
 void drivePIDD(int setPoint) {
-  double kP = 0.23; //Proportional tuning
-  double kI = 0.0;
-  double kD = 0.2;
+  double kP = 0.23, kI = 0.0, kD = 0.2;
 
   int prevError = 0;
 

@@ -20,3 +20,5 @@ void simpleTurn(int degrees);
 void drivePIDD(int setPoint);
 
 void motionProfileDrive(int setPoint);
+
+void odom_print();

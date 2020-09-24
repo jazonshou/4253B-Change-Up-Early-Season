@@ -21,15 +21,17 @@ double averageEncoderValue() {
 //AUTON FUNCTIONS
 int slewControl(int requestedSpeed){
   int currentSpeed = 0;
-  int rate = 1;
-  if(requestedSpeed > currentSpeed){
-    currentSpeed += rate;
+  int rate = 10;
+  while(abs(currentSpeed) < abs(requestedSpeed)){
+    if(requestedSpeed > currentSpeed){
+      currentSpeed += rate;
+    }
+    if(requestedSpeed < currentSpeed){
+      currentSpeed -= rate;
+    }
+    return currentSpeed;
   }
-  if(requestedSpeed < currentSpeed){
-    currentSpeed -= rate;
-  }
-  return currentSpeed;
-  delay(20);
+  return requestedSpeed;
 }
 
 void drivePIDD(int setPoint) {
@@ -56,7 +58,13 @@ void drivePIDD(int setPoint) {
     setDrive(power * direction, power * direction); //* direction
     delay(15);
   }
-  setDrive(0, 0);
+  setDrive(0, 0); //take it out when testing occilations
+}
+
+void odom_print(){
+  double deltaX, deltaY;
+  double prevX = 0; double prevY = 0;
+  int rotation; int prevRotation = 0;
 }
 
 void turnPID(int degrees, int direction) { //might not be able to reset gyro cuz it takes up 2 seconds

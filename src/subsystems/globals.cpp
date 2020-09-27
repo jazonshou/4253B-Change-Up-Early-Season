@@ -17,7 +17,8 @@ Motor indexerTop(19, MOTOR_GEARSET_06, false, MOTOR_ENCODER_COUNTS);
 
 //DRIVE SENSORS
 ADIEncoder encoderLeft('C', 'D', true);
-ADIEncoder encoderRight('G', 'H');
+ADIEncoder encoderRight('G', 'H', false);
+ADIEncoder encoderBack('A', 'B');
 Imu inertialBoi(1);
 
 //MISCELLANEUOUS (SENSORS)

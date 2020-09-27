@@ -77,6 +77,7 @@ void opcontrol(void);
 #include "subsystems/globals.hpp"
 #include "subsystems/drive.hpp"
 #include "subsystems/intakes.hpp"
+#include "subsystems/odom.hpp"
 /**
  * You can add C++-only headers here
  */

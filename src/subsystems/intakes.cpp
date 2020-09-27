@@ -13,7 +13,6 @@ void setIndexer(int bottom, int top) {
 
 //DRIVER CONTROL FUNCTIONS
 void autoIndex() {
-
     setIntakes(127, 127);
     setIndexer(127, 75);
 

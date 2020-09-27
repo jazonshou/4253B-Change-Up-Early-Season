@@ -18,6 +18,7 @@ extern Motor indexerTop;
 //DRIVE SENSORS
 extern ADIEncoder encoderLeft;
 extern ADIEncoder encoderRight;
+extern ADIEncoder encoderBack;
 extern Imu inertialBoi;
 
 //MISCELLANEUOUS (SENSORS)

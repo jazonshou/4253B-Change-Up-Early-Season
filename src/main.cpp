@@ -187,4 +187,7 @@ void opcontrol() {
 			lcd::print(1, "Auton 4");
 			break;
 		}
+
+		//ODOM TESTING
+		odom_print();
 }

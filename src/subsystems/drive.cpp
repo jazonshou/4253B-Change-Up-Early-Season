@@ -61,12 +61,6 @@ void drivePIDD(int setPoint) {
   setDrive(0, 0); //take it out when testing occilations
 }
 
-void odom_print(){
-  double deltaX, deltaY;
-  double prevX = 0; double prevY = 0;
-  int rotation; int prevRotation = 0;
-}
-
 void turnPID(int degrees, int direction) { //might not be able to reset gyro cuz it takes up 2 seconds
   double turnkP = 0.01;
   double turnkD = 0.0;

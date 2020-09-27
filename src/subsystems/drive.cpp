@@ -22,7 +22,7 @@ double averageEncoderValue() {
 int slewControl(int requestedSpeed){
   int currentSpeed = 0;
   int rate = 10;
-  while(abs(currentSpeed) < abs(requestedSpeed)){
+  if(abs(currentSpeed) < abs(requestedSpeed)){ //might want to change to while loop
     if(requestedSpeed > currentSpeed){
       currentSpeed += rate;
     }

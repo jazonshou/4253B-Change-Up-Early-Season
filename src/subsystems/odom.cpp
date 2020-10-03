@@ -5,6 +5,7 @@
 //Reset, Grab a ruler, and push the robot 20 inches to the right, then record the horizontal encoder value (Example: 10532)
 //You will need to convert it such that the horizontal matches for the same distance, so the multiplier will be horizontal(10532)/vertical(51269)
 //And that number will be the ratio (10532/51269 = 0.2054262809885116)
+//*type results here*
 double verticalToHorizontalRatio = 1.0000000;
 
 //Because we can average the vertical encoders while turning, it will not show a change
@@ -14,6 +15,7 @@ double verticalToHorizontalRatio = 1.0000000;
 //Rotate your robot such that the inertial sensor reads 3600 degrees (i.e. rotate the robot 10 times for the sake of accuracy)
 //Your horizontal encoder should have a value (Example: 231809)
 //Divide that result by 3600 (231809/3600 = 64.3913888), and that number will be the value used
+//*type results here*
 double rotateNegateHorizontalRatio = 50.000000;
 
 //This is utilized to convert the ticks moved to actual inches
@@ -21,6 +23,7 @@ double rotateNegateHorizontalRatio = 50.000000;
 //Get the average reading of the vertical encoders (Example: 253053)
 //Divide the reading by 20 (253053/20 = 12,652.65), and put the multipler in this area
 //This will convert it to inches
+//*type results here*
 double posTranslationMultiplier = 1;
 
 //FUNCTIONS

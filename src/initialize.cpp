@@ -14,6 +14,7 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+	//basically sets up the brain's screen for use
 	pros::lcd::initialize();
 
 	//Sets break types on all motors

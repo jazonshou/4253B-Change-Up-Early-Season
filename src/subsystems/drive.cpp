@@ -1,19 +1,19 @@
 #include "main.h"
 
 //HELPER FUNCTIONS
-void setDrive(int left, int right) {
+void setDrive(int left, int right) { //Function: sets voltage value to left and right side
   leftFront = left;
   leftBack = left;
   rightFront = right;
   rightBack = right;
 }
 
-void resetEncoders() {
+void resetEncoders() { //resets both tracking wheels
   encoderLeft.reset();
   encoderRight.reset();
 }
 
-double averageEncoderValue() {
+double averageEncoderValue() { //gets both tracking wheel values and returns the average
   return (abs(encoderLeft.get_value()) +
           abs(encoderRight.get_value())) / 2;
 }
@@ -21,47 +21,60 @@ double averageEncoderValue() {
 //AUTON FUNCTIONS
 int slewControl(int requestedSpeed){
   int currentSpeed = 0;
-  int rate = 10;
-  if(abs(currentSpeed) < abs(requestedSpeed)){ //might want to change to while loop
-    if(requestedSpeed > currentSpeed){
+  int rate = 10; //acceleration rate
+  if(abs(currentSpeed) < abs(requestedSpeed)){ //if it's accelerating, then...
+    if(requestedSpeed > currentSpeed){ //if it's going forward... increased voltage
       currentSpeed += rate;
     }
-    if(requestedSpeed < currentSpeed){
+    if(requestedSpeed < currentSpeed){ //if it's going backwards... decrease volatge
       currentSpeed -= rate;
     }
     return currentSpeed;
   }
-  return requestedSpeed;
+  return requestedSpeed; //if it's not accelerating,
+                         //then return original speed (because PID for deceleration)
 }
 
 void drivePIDD(int setPoint) {
-  double kP = 0.23, kI = 0.0, kD = 0.2;
+  double kP = 0.23, kI = 0.0, kD = 0.2; //constants (for tuning)
 
-  int prevError = 0;
+  int prevError = 0; //for derivative
 
   int direction = abs(setPoint) / setPoint; //Forward = 1, backwards = -1
   resetEncoders(); //resets encoders
 
-  while(1) { //while both encoders are less than setpoint...
+  while(1) {
+    //P: error = how far we need to go (setpoint) - the actual encoder value
+    //this is the core of the PID controller
+    //as the chassis gets closer, the error becomes smaller making the chassis speed slower
     int driveError = setPoint - (direction * encoderRight.get_value());
 
+    //Integral is used to prevent stedy state error (SSE)
+    //SSE is when the P & D decelerate the chassis so much, it doesn't actually reach the target
+    //Inegral finds if the chassis is decelerating too much and increases the voltage...
+    //Allowing the chassis to be able to reach the setPoint
     int integral = integral + driveError;
+
+    //Once the encoder value is over the desired value, this sets the integral to 0
+    //which prevents oscillations
     if(abs(encoderRight.get_value()) > abs(setPoint)){
       integral = 0;
     }
 
+    //TBH idk about derivate - basically just makes the deceleration smoother
     int derivative = driveError - prevError;
     prevError = driveError;
 
+    //this puts everything together into one variable which then sets the voltage of the chassis
     double power = driveError * kP + integral * kI + derivative * kD;
 
     setDrive(power * direction, power * direction); //* direction
     delay(15);
   }
-  setDrive(0, 0); //take it out when testing occilations
+  setDrive(0, 0); //idk if we need tbh
 }
 
-void turnPID(int degrees, int direction) { //might not be able to reset gyro cuz it takes up 2 seconds
+void turnPID(int degrees, int direction) { //same thing as above... except turning
   double turnkP = 0.01;
   double turnkD = 0.0;
 

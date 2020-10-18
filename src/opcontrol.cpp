@@ -28,6 +28,10 @@ void opcontrol() {
 		//AUTO INTAKE
 		int value = master.get_digital(E_CONTROLLER_DIGITAL_A);
 
+		//if the button A is pressed
+		//start the autoIndex
+		//but if the button A is pressed again
+		//stop the autoIndex
 		if(value == 1 && preValue == 0) {
 			cnt++;
 		}

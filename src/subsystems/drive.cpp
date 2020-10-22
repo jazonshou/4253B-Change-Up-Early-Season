@@ -1,89 +1,116 @@
 #include "main.h"
 
 //HELPER FUNCTIONS
-void setDrive(int left, int right) { //Function: sets voltage value to left and right side
+void setDrive(int left, int right) {
   leftFront = left;
   leftBack = left;
   rightFront = right;
   rightBack = right;
 }
 
-void resetEncoders() { //resets both tracking wheels
+void setLeft(int left){
+  leftFront = left;
+  leftBack = left;
+}
+
+void setRight(int right){
+  rightFront = right;
+  rightBack = right;
+}
+
+void resetEncoders() {
   encoderLeft.reset();
   encoderRight.reset();
 }
 
-double averageEncoderValue() { //gets both tracking wheel values and returns the average
+double averageEncoderValue() {
   return (abs(encoderLeft.get_value()) +
           abs(encoderRight.get_value())) / 2;
 }
 
 //AUTON FUNCTIONS
-int slewControl(int requestedSpeed){
-  int currentSpeed = 0;
-  int rate = 10; //acceleration rate
-  if(abs(currentSpeed) < abs(requestedSpeed)){ //if it's accelerating, then...
-    if(requestedSpeed > currentSpeed){ //if it's going forward... increased voltage
-      currentSpeed += rate;
-    }
-    if(requestedSpeed < currentSpeed){ //if it's going backwards... decrease volatge
-      currentSpeed -= rate;
-    }
-    return currentSpeed;
-  }
-  return requestedSpeed; //if it's not accelerating,
-                         //then return original speed (because PID for deceleration)
+const int accel_step = 9;
+const int deccel_step = 256; // no decel slew
+static int leftSpeed = 0;
+static int rightSpeed = 0;
+
+void leftSlew(int leftTarget){
+  int step;
+
+  if(abs(leftSpeed) < abs(leftTarget))
+    step = accel_step;
+  else
+    step = deccel_step;
+
+  if(leftTarget > leftSpeed + step)
+    leftSpeed += step;
+  else if(leftTarget < leftSpeed - step)
+    leftSpeed -= step;
+  else
+    leftSpeed = leftTarget;
+
+  setLeft(leftSpeed);
 }
 
-void drivePIDD(int setPoint) {
-  double kP = 0.23, kI = 0.0, kD = 0.2; //constants (for tuning)
+void rightSlew(int rightTarget){
+  int step;
 
-  int prevError = 0; //for derivative
+  if(abs(rightSpeed) < abs(rightTarget))
+    step = accel_step;
+  else
+    step = deccel_step;
 
-  int direction = abs(setPoint) / setPoint; //Forward = 1, backwards = -1
+  if(rightTarget > rightSpeed + step)
+    rightSpeed += step;
+  else if(rightTarget < rightSpeed - step)
+    rightSpeed -= step;
+  else
+    rightSpeed = rightTarget;
+
+  setRight(rightSpeed);
+}
+/**************************************************/
+
+void drivePID(int setPoint) {
+  double kP = 0.1575, kD = 0.0; //constants (for tuning)
+  int error = 0, prevError = 0;
+  int derivative = 0;
+  double initialRotation = inertialBoi.get_rotation();
+  double swerveVal = 0;
+
   resetEncoders(); //resets encoders
 
   while(1) {
-    //P: error = how far we need to go (setpoint) - the actual encoder value
-    //this is the core of the PID controller
-    //as the chassis gets closer, the error becomes smaller making the chassis speed slower
-    int driveError = setPoint - (direction * encoderRight.get_value());
-
-    //Integral is used to prevent stedy state error (SSE)
-    //SSE is when the P & D decelerate the chassis so much, it doesn't actually reach the target
-    //Inegral finds if the chassis is decelerating too much and increases the voltage...
-    //Allowing the chassis to be able to reach the setPoint
-    int integral = integral + driveError;
-
-    //Once the encoder value is over the desired value, this sets the integral to 0
-    //which prevents oscillations
-    if(abs(encoderRight.get_value()) > abs(setPoint)){
+    swerveVal = MAX(inertialBoi.get_rotation() - initialRotation, 0);
+    error = setPoint - encoderLeft.get_value();
+    /*if((error ^ setPoint) < 0 || integral >= 1000000){
       integral = 0;
-    }
+    }*/
 
-    //TBH idk about derivate - basically just makes the deceleration smoother
-    int derivative = driveError - prevError;
-    prevError = driveError;
+    derivative = error - prevError;
+    prevError = error;
 
-    //this puts everything together into one variable which then sets the voltage of the chassis
-    double power = driveError * kP + integral * kI + derivative * kD;
-
-    setDrive(power * direction, power * direction); //* direction
+    double power = error * kP + derivative * kD;
+    leftSlew(power - swerveVal); rightSlew(power + swerveVal);
+    //setDrive(power - swerveVal, power + swerveVal); //* direction
+    pros::lcd::print(1, "Error: %d", error);
+    pros::lcd::print(3, "Swerve Value: %d", swerveVal);
     delay(15);
   }
-  setDrive(0, 0); //idk if we need tbh
+  setDrive(0, 0);
 }
 
-void turnPID(int degrees, int direction) { //same thing as above... except turning
-  double turnkP = 0.01;
-  double turnkD = 0.0;
+void turnPID(int degrees) { //might not be able to reset gyro cuz it takes up 2 seconds
+  double turnkP = 2.50;
+  double turnkD = 8.00;
 
   int prevTurnError = 0;
+  int direction = abs(degrees)/degrees;
 
-  double turnDifference = degrees - inertialBoi.get_heading();
+  //double turnDifference = degrees - inertialBoi.get_rotation();
 
-  while(inertialBoi.get_heading() < degrees && direction == true) { //either get_rotation or get_heading
-    int turnError = degrees - inertialBoi.get_heading(); //either get_rotation or get_heading
+  while(1) { //either get_rotation or get_heading
+    int turnError = abs(degrees) - abs(inertialBoi.get_rotation()); //either get_rotation or get_heading
 
     int turnDerivative = turnError - prevTurnError;
     prevTurnError = turnError;
@@ -91,15 +118,18 @@ void turnPID(int degrees, int direction) { //same thing as above... except turni
     double turnPower = turnError * turnkP + turnDerivative * turnkD;
 
     setDrive(turnPower * direction, -turnPower * direction);
+    pros::lcd::print(5, "Turn Error: %d", turnError);
     delay(15);
   }
   setDrive(0,0);
 }
 
 void simpleTurn(int degrees){
+  inertialBoi.reset();
   while(inertialBoi.get_heading() < degrees){
-    setDrive(-50, 50);
+    setDrive(50, -50);
   }
+  setDrive(0, 0);
 }
 
 /*void motionProfileDrive(int setPoint){ //Accelerate, constant, decelerate (PID)

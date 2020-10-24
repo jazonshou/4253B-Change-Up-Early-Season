@@ -7,17 +7,19 @@ void resetEncoders();
 
 double averageEncoderValue();
 
+double averageMotorVoltage();
+
 //DRIVER CONTROL FUNCTIONS
 void setDriveMotors();
 
 //AUTON FUNCTIONS
-void drivePID(int setPoint);
+void drivePID(int setPoint, bool autoIntake, int time);
 
-void turnPID(int degrees, int direction);
+void turnPID(int degrees);
 
 void simpleTurn(int degrees);
 
-void drivePIDD(int setPoint);
+void drivePID(int setPoint);
 
 void motionProfileDrive(int setPoint);
 

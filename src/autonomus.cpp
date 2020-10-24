@@ -12,8 +12,16 @@
  * from where it left off.
  */
 
-void autonomous() {
-	//For PID tuning purposes
-	drivePIDD(2000);
-	drivePIDD(1000);
-}
+ void autonomous() {
+ 	drivePID(850, true, 500);
+ 	setIntakes(0, 0);
+ 	turnPID(-30);
+ 	drivePID(500, false, 200);
+ 	setIntakes(0, 0); setIndexer(127, 127);
+ 	delay(300);
+ 	setIndexer(0, -80);
+ 	delay(500);
+ 	setIndexer(0, 0);
+ 	drivePID(-1400, false, 600);
+   turnPID(-70);
+ }

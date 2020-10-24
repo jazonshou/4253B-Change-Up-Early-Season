@@ -14,7 +14,6 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	//basically sets up the brain's screen for use
 	pros::lcd::initialize();
 
 	//Sets break types on all motors
@@ -23,10 +22,13 @@ void initialize() {
 	rightFront.set_brake_mode(MOTOR_BRAKE_COAST);
 	rightBack.set_brake_mode(MOTOR_BRAKE_COAST);
 
-	intakeLeft.set_brake_mode(MOTOR_BRAKE_BRAKE);
-	intakeRight.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	intakeLeft.set_brake_mode(MOTOR_BRAKE_COAST);
+	intakeRight.set_brake_mode(MOTOR_BRAKE_COAST);
 	indexerBottom.set_brake_mode(MOTOR_BRAKE_HOLD);
 	indexerTop.set_brake_mode(MOTOR_BRAKE_HOLD);
+
+	inertialBoi.reset();
+	delay(2000);
 
 	//IMU Stuff
 	/*int time = pros::millis();

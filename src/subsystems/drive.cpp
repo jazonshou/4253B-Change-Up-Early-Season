@@ -23,6 +23,10 @@ void resetEncoders() {
   encoderRight.reset();
 }
 
+double averageMotorVoltage(){
+  return abs((leftBack.get_voltage() + leftFront.get_voltage() + rightBack.get_voltage() + rightFront.get_voltage()) / 4);
+}
+
 double averageEncoderValue() {
   return (abs(encoderLeft.get_value()) +
           abs(encoderRight.get_value())) / 2;
@@ -71,45 +75,62 @@ void rightSlew(int rightTarget){
 }
 /**************************************************/
 
-void drivePID(int setPoint) {
-  double kP = 0.1575, kD = 0.0; //constants (for tuning)
+void drivePID(int setPoint, bool autoIntake, int time) {
+  double kP = 0.1275, kD = 0.35; //constants (for tuning)
   int error = 0, prevError = 0;
   int derivative = 0;
   double initialRotation = inertialBoi.get_rotation();
   double swerveVal = 0;
+  int cnt = 0;
+  pros::lcd::clear();
+
 
   resetEncoders(); //resets encoders
 
   while(1) {
+    cnt += 15;
+    if( cnt >= time){
+      break;
+    }
     swerveVal = MAX(inertialBoi.get_rotation() - initialRotation, 0);
     error = setPoint - encoderLeft.get_value();
-    /*if((error ^ setPoint) < 0 || integral >= 1000000){
-      integral = 0;
-    }*/
 
     derivative = error - prevError;
     prevError = error;
 
     double power = error * kP + derivative * kD;
-    leftSlew(power - swerveVal); rightSlew(power + swerveVal);
-    //setDrive(power - swerveVal, power + swerveVal); //* direction
+    if(abs(power) <= 127){
+      leftSlew(power - swerveVal); rightSlew(power + swerveVal);
+    }
+    else{
+      leftSlew(127); rightSlew(127);
+    }
+
+
     pros::lcd::print(1, "Error: %d", error);
+    pros::lcd::print(2, "Rotation: %d", inertialBoi.get_rotation());
     pros::lcd::print(3, "Swerve Value: %d", swerveVal);
+    if(autoIntake == true){
+      autoIndex();
+    }
     delay(15);
   }
   setDrive(0, 0);
 }
 
 void turnPID(int degrees) { //might not be able to reset gyro cuz it takes up 2 seconds
-  double turnkP = 2.50;
+  double turnkP = 3.25;
   double turnkD = 8.00;
 
   int prevTurnError = 0;
   int direction = abs(degrees)/degrees;
+  int cnt = 0;
 
+  pros::lcd::clear();
   //double turnDifference = degrees - inertialBoi.get_rotation();
 
   while(1) { //either get_rotation or get_heading
+    cnt++;
     int turnError = abs(degrees) - abs(inertialBoi.get_rotation()); //either get_rotation or get_heading
 
     int turnDerivative = turnError - prevTurnError;
@@ -117,6 +138,9 @@ void turnPID(int degrees) { //might not be able to reset gyro cuz it takes up 2 
 
     double turnPower = turnError * turnkP + turnDerivative * turnkD;
 
+    if(turnError <= 5 && cnt >= 20){
+      break;
+    }
     setDrive(turnPower * direction, -turnPower * direction);
     pros::lcd::print(5, "Turn Error: %d", turnError);
     delay(15);

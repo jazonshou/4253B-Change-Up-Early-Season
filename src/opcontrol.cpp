@@ -14,7 +14,11 @@
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	//Auto intake stuff
+	leftFront.set_brake_mode(MOTOR_BRAKE_COAST);
+	leftBack.set_brake_mode(MOTOR_BRAKE_COAST);
+	rightFront.set_brake_mode(MOTOR_BRAKE_COAST);
+	rightBack.set_brake_mode(MOTOR_BRAKE_COAST);
+  //Auto intake stuff
 	int preValue = 0;
 	int cnt = 0;
 
@@ -28,10 +32,6 @@ void opcontrol() {
 		//AUTO INTAKE
 		int value = master.get_digital(E_CONTROLLER_DIGITAL_A);
 
-		//if the button A is pressed
-		//start the autoIndex
-		//but if the button A is pressed again
-		//stop the autoIndex
 		if(value == 1 && preValue == 0) {
 			cnt++;
 		}
@@ -40,7 +40,7 @@ void opcontrol() {
 		if(cnt % 2 == 1){
 			autoIndex();
 		}
-		else{
+		else {
 			setIntakes(0, 0);
 			setIndexer(0, 0);
 		}
@@ -59,42 +59,6 @@ void opcontrol() {
 		else if(master.get_digital(E_CONTROLLER_DIGITAL_L2)){
 			setIndexer(-127, -127);
 		}
-		delay(15);
-	}
-
-	//SCREEN TESTING
-	  int number = 0;
-		if(limitSwitch.get_value()) {
-			number ++;
-			number %= 4;
-		}
-
-		switch(number) {
-			case 0:
-			lcd::clear();
-			lcd::print(1, "Auton 1");
-			break;
-
-			case 1:
-			lcd::clear();
-			lcd::print(1, "Auton 2");
-			break;
-
-			case 2:
-			lcd::clear();
-			lcd::print(1, "Auton 3");
-			break;
-
-			case 3:
-			lcd::clear();
-			lcd::print(1, "Auton 4");
-			break;
-		}
-
-		//ODOM TESTING
-		//odom_print();
-		/*lcd::print(0, "Left encoder value: %d", encoderLeft.get_value());
-		lcd::print(1, "Right encoder value: %d", encoderRight.get_value());
-		lcd::print(2, "Back encoder value: %d", encoderBack.get_value());
-		lcd::print(3, "Rotation: %d", inertialBoi.get_rotation());*/
+		delay(5);
+  }
 }

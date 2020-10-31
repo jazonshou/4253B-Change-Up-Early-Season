@@ -17,12 +17,12 @@ extern Motor indexerTop;
 
 //DRIVE SENSORS
 extern ADIEncoder encoderLeft;
-extern ADIEncoder encoderRight;
-extern ADIEncoder encoderBack;
+//extern ADIEncoder encoderRight;
 extern Imu inertialBoi;
 
 //MISCELLANEUOUS (SENSORS)
 extern ADILineSensor lineSensorBottom;
 extern ADILineSensor lineSensorMiddle;
 extern ADILineSensor lineSensorTop;
+extern ADIButton topLimitSwitch;
 extern ADIButton limitSwitch;

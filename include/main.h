@@ -39,7 +39,7 @@
 /**
  * You should add more #includes here
  */
-#include "okapi/api.hpp"
+//#include "okapi/api.hpp"
 #include "pros/api_legacy.h"
 
 /**
@@ -51,8 +51,7 @@
  * namespace.
  */
  using namespace pros;
- using namespace okapi::literals;
-// using namespace pros::literals;
+ using namespace pros::literals;
 // using namespace okapi;
 
 /**
@@ -73,14 +72,12 @@ void opcontrol(void);
 #endif
 
 #ifdef __cplusplus
-
-#include "subsystems/globals.hpp"
-#include "subsystems/drive.hpp"
-#include "subsystems/intakes.hpp"
-#include "subsystems/odom.hpp"
 /**
  * You can add C++-only headers here
  */
+ #include "subsystems/drive.hpp"
+ #include "subsystems/globals.hpp"
+ #include "subsystems/intakes.hpp"
 //#include <iostream>
 #endif
 

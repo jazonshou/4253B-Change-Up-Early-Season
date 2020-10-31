@@ -6,6 +6,15 @@
  * When this callback is fired, it will toggle line 2 of the LCD text between
  * "I was pressed!" and nothing.
  */
+void on_center_button() {
+	static bool pressed = false;
+	pressed = !pressed;
+	if (pressed) {
+		pros::lcd::set_text(2, "I was pressed!");
+	} else {
+		pros::lcd::clear_line(2);
+	}
+}
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -14,13 +23,13 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::lcd::initialize();
+	lcd::initialize();
 
 	//Sets break types on all motors
-	leftFront.set_brake_mode(MOTOR_BRAKE_COAST);
-	leftBack.set_brake_mode(MOTOR_BRAKE_COAST);
-	rightFront.set_brake_mode(MOTOR_BRAKE_COAST);
-	rightBack.set_brake_mode(MOTOR_BRAKE_COAST);
+	leftFront.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	leftBack.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	rightFront.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	rightBack.set_brake_mode(MOTOR_BRAKE_BRAKE);
 
 	intakeLeft.set_brake_mode(MOTOR_BRAKE_COAST);
 	intakeRight.set_brake_mode(MOTOR_BRAKE_COAST);
@@ -29,18 +38,6 @@ void initialize() {
 
 	inertialBoi.reset();
 	delay(2000);
-
-	//IMU Stuff
-	/*int time = pros::millis();
-  int iter = 0;
-  while (inertialBoi.is_calibrating()) {
-    lcd::print(0, "IMU calibrating... %d\n", iter);
-    iter += 10;
-    pros::delay(10);
-  }
-  // should print about 2000 ms
-	lcd::clear_line(0);
-  lcd::print(0, "IMU is done calibrating (took %d ms)\n", iter - time);
 
 	//SCREEN
 	int number = 0;
@@ -52,26 +49,27 @@ void initialize() {
 
 	switch(number) {
 		case 0:
-		lcd::clear();
+		lcd::clear_line(1);
 		lcd::print(1, "Auton 1");
 		break;
 
 		case 1:
-		lcd::clear();
+		lcd::clear_line(1);
 		lcd::print(1, "Auton 2");
 		break;
 
 		case 2:
-		lcd::clear();
+		lcd::clear_line(1);
 		lcd::print(1, "Auton 3");
 		break;
 
 		case 3:
-		lcd::clear();
+		lcd::clear_line(1);
 		lcd::print(1, "Auton 4");
 		break;
-	}*/
+	}
 }
+
 /**
  * Runs while the robot is in the disabled state of Field Management System or
  * the VEX Competition Switch, following either autonomous or opcontrol. When

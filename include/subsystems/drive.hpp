@@ -3,24 +3,26 @@
 //HELPER FUNCTIONS
 void setDrive (int left, int right);
 
+void setLeft(int left);
+
+void setRight(int right);
+
 void resetEncoders();
 
-double averageEncoderValue();
-
 double averageMotorVoltage();
+
+int convertToTick(double inch);
 
 //DRIVER CONTROL FUNCTIONS
 void setDriveMotors();
 
 //AUTON FUNCTIONS
-void drivePID(int setPoint, bool autoIntake, int time);
+void leftSlew(int leftTarget);
+
+void rightSlew(int rightTarget);
+
+void driveShort(double inch, bool autoIntake, int time);
+
+void driveMedium(double inch, bool autoIntake, int time);
 
 void turnPID(int degrees);
-
-void simpleTurn(int degrees);
-
-void drivePID(int setPoint);
-
-void motionProfileDrive(int setPoint);
-
-void odom_print();

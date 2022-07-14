@@ -26,7 +26,7 @@ An attempt at implementing odometry. Successful implementation found in [late se
 
 Controls the rollers and intakes of the robot. Custom auto index algorithm used to automatically index balls into the roller system. 
 
-## Usage
+## Installation
 
 1. Install PROS [here](https://pros.cs.purdue.edu/v5/getting-started/index.html)
 2. Download code: 
